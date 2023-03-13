@@ -22,30 +22,31 @@ public class ComplexNumber {
         return imaginaryPart;
     }
 
-    public ComplexNumber add (ComplexNumber number){
+    public ComplexNumber add(ComplexNumber number) {
         return new ComplexNumber(this.realPart + number.getRealPart(),
                 this.imaginaryPart + number.getImaginaryPart());
     }
 
-    public ComplexNumber subtract (ComplexNumber number){
+    public ComplexNumber subtract(ComplexNumber number) {
         return new ComplexNumber(this.realPart - number.getRealPart(),
                 this.imaginaryPart - number.getImaginaryPart());
     }
 
-    public ComplexNumber multiply(ComplexNumber number){
+    public ComplexNumber multiply(ComplexNumber number) {
         return new ComplexNumber(this.realPart * number.getRealPart() - imaginaryPart * number.getImaginaryPart(),
                 realPart * number.getImaginaryPart() + imaginaryPart * number.getRealPart());
     }
-    public double abs(){
+
+    public double abs() {
         return Math.sqrt(realPart * realPart + imaginaryPart * imaginaryPart);
     }
 
     @Override
     public String toString() {
         String result;
-        if (imaginaryPart == 0){
+        if (imaginaryPart == 0) {
             result = "" + realPart;
-        } else if (realPart == 0){
+        } else if (realPart == 0) {
             result = imaginaryPart + "i";
         } else {
             result = realPart + ((imaginaryPart < 0) ? "" : " + ") + imaginaryPart + "i";

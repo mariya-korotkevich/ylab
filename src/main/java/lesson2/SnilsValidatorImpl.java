@@ -4,7 +4,7 @@ public class SnilsValidatorImpl implements SnilsValidator {
     @Override
     public boolean validate(String snils) {
 
-        if (snils.length() != 11) {
+        if (snils == null || snils.length() != 11) {
             return false;
         }
 

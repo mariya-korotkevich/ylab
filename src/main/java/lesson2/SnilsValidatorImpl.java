@@ -1,40 +1,33 @@
 package lesson2;
 
-public class SnilsValidatorImpl implements SnilsValidator{
+public class SnilsValidatorImpl implements SnilsValidator {
     @Override
     public boolean validate(String snils) {
-        int k = 9;
+
+        if (snils.length() != 11) {
+            return false;
+        }
 
         int sum = 0;
-        int control = 0;
-        for (int i = 0; i < snils.length(); i++) {
-            if (k < -1){
-                break;
+        for (int i = 0; i < 9; i++) {
+            if (!Character.isDigit(snils.charAt(i))) {
+                return false;
             }
-            if (!Character.isDigit(snils.charAt(i))){
-                continue;
-            }
-            if (k <= 0){
-                control += Character.digit(snils.charAt(i), 10) * (k == 0 ? 10 : 1);
-            } else {
-                sum += Character.digit(snils.charAt(i), 10) * k;
-            }
-            k--;
+            sum += Character.digit(snils.charAt(i), 10) * (9 - i);
         }
 
-        int control2 = 0;
-        if (sum < 100){
-            control2 = sum;
-        } else if (sum == 100){
-            control2 = 0;
-        } else if (sum % 101 == 100){
-            control2 = 0;
+        int testControl;
+        if (sum < 100) {
+            testControl = sum;
+        } else if (sum == 100 || sum % 101 == 100) {
+            testControl = 0;
         } else {
-            control2 = sum % 101;
+            testControl = sum % 101;
         }
 
-        System.out.println("sum = " + sum + "; control = " + control + "; control2 = " + control2);
+        int control = Character.digit(snils.charAt(9), 10) * 10
+                + Character.digit(snils.charAt(10), 10);
 
-        return control == control2;
+        return control == testControl;
     }
 }

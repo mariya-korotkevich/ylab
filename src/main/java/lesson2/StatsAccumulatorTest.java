@@ -2,7 +2,7 @@ package lesson2;
 
 public class StatsAccumulatorTest {
     public static void main(String[] args) {
-        StatsAccumulator s = new StatsAccumulatorImpl(); // как то создается
+        StatsAccumulator s = new StatsAccumulatorImpl();
         s.add(1);
         s.add(2);
         System.out.println(s.getAvg()); // 1.5 - среднее арифметическое элементов
@@ -12,5 +12,6 @@ public class StatsAccumulatorTest {
         s.add(8);
         System.out.println(s.getMax()); // 8 - максимальный из переданных
         System.out.println(s.getCount()); // 5 - количество переданных элементов
+        System.out.println(s.getAvg()); //2.8 - среднее арифметическое
     }
 }

@@ -1,11 +1,12 @@
 package lesson2;
 
+import java.util.Date;
+
 public class RateLimitedPrinterTest {
     public static void main(String[] args) {
-        RateLimitedPrinter rateLimitedPrinter = new RateLimitedPrinter(1000);
+        RateLimitedPrinter rateLimitedPrinter = new RateLimitedPrinter(3000);
         for (int i = 0; i < 1_000_000_000; i++) {
-            rateLimitedPrinter.print(String.valueOf(i));
+            rateLimitedPrinter.print(new Date().toString());
         }
-        long currentTime = System.currentTimeMillis();
     }
 }

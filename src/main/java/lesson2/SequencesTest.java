@@ -3,15 +3,34 @@ package lesson2;
 public class SequencesTest {
     public static void main(String[] args) {
         Sequences sequences = new SequencesImpl();
-        //sequences.a(10);
-        //sequences.b(10);
-//        sequences.c(10);
-//        sequences.d(10);
-//        sequences.e(10);
-//        sequences.f(10);
-//        sequences.g(10);
-        //sequences.h(10);
-       // sequences.i(10);
-        sequences.j(8);
+        System.out.println("Последовательность A :");
+        sequences.a(10);
+
+        System.out.println("Последовательность B :");
+        sequences.b(10);
+
+        System.out.println("Последовательность C :");
+        sequences.c(10);
+
+        System.out.println("Последовательность D :");
+        sequences.d(10);
+
+        System.out.println("Последовательность E :");
+        sequences.e(10);
+
+        System.out.println("Последовательность F :");
+        sequences.f(10);
+
+        System.out.println("Последовательность G :");
+        sequences.g(10);
+
+        System.out.println("Последовательность H :");
+        sequences.h(10);
+
+        System.out.println("Последовательность I :");
+        sequences.i(10);
+
+        System.out.println("Последовательность J :");
+        sequences.j(10);
     }
 }

@@ -18,14 +18,14 @@ public class SequencesImpl implements Sequences{
     @Override
     public void c(int n) {
         for (int i = 1; i <= n; i++) {
-            System.out.println(i * i);
+            System.out.println((int) Math.pow(i, 2));
         }
     }
 
     @Override
     public void d(int n) {
         for (int i = 1; i <= n; i++) {
-            System.out.println(i * i * i);
+            System.out.println((int) Math.pow(i, 3));
         }
     }
 
@@ -59,27 +59,27 @@ public class SequencesImpl implements Sequences{
 
     @Override
     public void i(int n) {
-        int f = 1;
+        int number = 1;
         for (int i = 1; i <= n; i++) {
-            f = f * i;
-            System.out.println(f);
+            number = number * i;
+            System.out.println(number);
         }
     }
 
     @Override
     public void j(int n) {
-        int n1 = 1;
-        int n2 = 1;
-        int f = 0;
+        int prevNumber1 = 1;
+        int prevNumber2 = 1;
+        int number;
         for (int i = 1; i <= n; i++) {
             if (i == 1 || i == 2){
                 System.out.println(1);
                 continue;
             }
-            f = n1 + n2;
-            n2 = n1;
-            n1 = f;
-            System.out.println(f);
+            number = prevNumber1 + prevNumber2;
+            prevNumber2 = prevNumber1;
+            prevNumber1 = number;
+            System.out.println(number);
         }
     }
 }

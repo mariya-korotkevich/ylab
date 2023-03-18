@@ -1,4 +1,4 @@
-package lesson3;
+package lesson3.orgStructure;
 
 import java.io.File;
 import java.io.IOException;

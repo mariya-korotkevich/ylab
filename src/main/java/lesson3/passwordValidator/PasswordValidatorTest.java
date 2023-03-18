@@ -13,6 +13,15 @@ public class PasswordValidatorTest {
         System.out.println("validate(\"login\", \"password\", \"otherPassword\") = "
                 + PasswordValidator.validate("login", "password", "otherPassword")); //false - password и confirmPassword не совпадают
         System.out.println("validate(\"login\", \"password\", \"password\") = "
-                + PasswordValidator.validate("login_1", "password", "password")); //true - всё ок
+                + PasswordValidator.validate("login", "password", "password")); //true - всё ок
+        System.out.println("validate(\"\", \"\", \"\") = "
+                + PasswordValidator.validate("", "", "")); //true - всё ок
+        System.out.println("validate(\"111\", \"222\", \"222\") = "
+                + PasswordValidator.validate("111", "222", "222")); //true - всё ок
+        System.out.println("validate(\"___\", \"_\", \"_\") = "
+                + PasswordValidator.validate("___", "_", "_")); //true - всё ок
+        System.out.println("validate(\"a1_\", \"b_2\", \"b_2\") = "
+                + PasswordValidator.validate("a1_", "b_2", "b_2")); //true - всё ок
+
     }
 }

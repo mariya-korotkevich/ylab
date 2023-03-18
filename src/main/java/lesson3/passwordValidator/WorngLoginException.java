@@ -1,4 +1,4 @@
-package lesson3;
+package lesson3.passwordValidator;
 
 public class WorngLoginException extends Exception{
     public WorngLoginException() {

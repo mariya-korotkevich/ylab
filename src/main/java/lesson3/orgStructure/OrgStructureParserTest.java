@@ -17,6 +17,6 @@ public class OrgStructureParserTest {
 
         OrgStructureParser parser = new OrgStructureParserImpl();
         Employee boss = parser.parseStructure(csvFile);
-        System.out.println("Боссом является сотрудник с именем " + boss.getName());
+        System.out.println("Боссом является сотрудник: " + boss);
     }
 }

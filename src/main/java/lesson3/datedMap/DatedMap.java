@@ -1,4 +1,4 @@
-package lesson3;
+package lesson3.datedMap;
 
 import java.util.Date;
 import java.util.Set;

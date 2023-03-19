@@ -5,86 +5,82 @@ import java.nio.file.*;
 import java.util.*;
 
 public class Sorter {
+    private static final int SIZE_OF_PART = 1_000_000;
+
     public File sortFile(File dataFile) throws IOException {
-        System.out.println("Starts at " + new Date());
-        Queue<File> files = splitIntoSortedParts(dataFile);
-        File mergedFile = merge(files);
-
-        System.out.println("Coping file");
-        Path path = Paths.get(dataFile.getAbsolutePath());
-        String newName = path.getParent() + File.separator + "Sorted_" + path.getFileName();
-        Files.copy(Paths.get(mergedFile.getAbsolutePath()), Paths.get(newName), StandardCopyOption.REPLACE_EXISTING);
-
-//        return mergedFile != null ? mergedFile : dataFile;
-
-        System.out.println("Ended at " + new Date());
-
-        return new File(newName);
+        Queue<File> files = splitIntoSortedFiles(dataFile);
+        File mergedFile = mergeFiles(files);
+        return copySortedFile(mergedFile, dataFile);
     }
 
-    private Queue<File> splitIntoSortedParts(File dataFile) throws IOException {
-
+    private Queue<File> splitIntoSortedFiles(File dataFile) throws IOException {
         Queue<File> files = new LinkedList<>();
-        int sizePart = 1_000_000;
-
-        System.out.println("Split file");
-
         try (Scanner scanner = new Scanner(new FileInputStream(dataFile))) {
-            List<Long> tempList = new ArrayList<>(sizePart);
+            List<Long> tempList = new ArrayList<>(SIZE_OF_PART);
             while (scanner.hasNextLong()) {
-                File currentFile = File.createTempFile("split", ".txt");
-                currentFile.deleteOnExit();
-                for (int i = 0; i < sizePart && scanner.hasNextLong(); i++) {
+                for (int i = 0; i < SIZE_OF_PART && scanner.hasNextLong(); i++) {
                     tempList.add(scanner.nextLong());
                 }
                 Collections.sort(tempList);
-                try (PrintWriter pw = new PrintWriter(new FileWriter(currentFile, true))) {
+
+                File tempFile = createTempFile();
+                try (PrintWriter pw = new PrintWriter(tempFile)) {
                     for (Long aLong : tempList) {
                         pw.println(aLong);
                     }
                     pw.flush();
                 }
+
                 tempList.clear();
-                files.add(currentFile);
-                System.out.println("split on " + files.size() + " parts");
+                files.add(tempFile);
             }
         }
         return files;
     }
 
-    private File merge(Queue<File> files) throws IOException {
-        System.out.println("Merging files...");
+    private File mergeFiles(Queue<File> files) throws IOException {
         while (files.size() > 1) {
-            File fileC = File.createTempFile("merge", ".txt");
-            fileC.deleteOnExit();
+            File tempFile = createTempFile();
             try (Scanner scanner1 = new Scanner(new FileInputStream(files.poll()));
                  Scanner scanner2 = new Scanner(new FileInputStream(files.poll()));
-                 PrintWriter pw = new PrintWriter(new FileWriter(fileC, true))) {
-                Long a = null;
-                Long b = null;
+                 PrintWriter pw = new PrintWriter(tempFile)) {
+                Long number1 = null;
+                Long number2 = null;
                 while (scanner1.hasNextLong()
                         || scanner2.hasNextLong()
-                        || a != null
-                        || b != null) {
-                    if (a == null && scanner1.hasNextLong()) {
-                        a = scanner1.nextLong();
+                        || number1 != null
+                        || number2 != null) {
+                    if (number1 == null && scanner1.hasNextLong()) {
+                        number1 = scanner1.nextLong();
                     }
-                    if (b == null && scanner2.hasNextLong()) {
-                        b = scanner2.nextLong();
+                    if (number2 == null && scanner2.hasNextLong()) {
+                        number2 = scanner2.nextLong();
                     }
-                    if (b == null || (a != null && a <= b)) {
-                        pw.println(a);
-                        a = null;
+                    if (number2 == null || (number1 != null && number1 <= number2)) {
+                        pw.println(number1);
+                        number1 = null;
                     } else {
-                        pw.println(b);
-                        b = null;
+                        pw.println(number2);
+                        number2 = null;
                     }
                 }
                 pw.flush();
             }
-            files.add(fileC);
-            System.out.println("Left " + files.size() + " file");
+            files.add(tempFile);
         }
         return files.poll();
+    }
+
+    private File copySortedFile(File sortedFile, File dataFile) throws IOException {
+        Path path = Paths.get(dataFile.getAbsolutePath());
+        String newName = path.getParent() + File.separator + "Sorted_" + path.getFileName();
+        Files.copy(Paths.get(sortedFile.getAbsolutePath()), Paths.get(newName), StandardCopyOption.REPLACE_EXISTING);
+        return new File(newName);
+    }
+
+    private File createTempFile() throws IOException {
+        File currentFile = File.createTempFile("tmp", ".txt", new File("/home/maria/temmp/"));
+        currentFile.deleteOnExit();
+        return currentFile;
     }
 }

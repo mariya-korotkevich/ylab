@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class SorterTest {
     public static void main(String[] args) throws IOException {
-        //File dataFile = new Generator().generate("data.txt", 375_000_000);
+        //File dataFile = new Generator().generate("data.txt", 50_000_000);
 
         File dataFile = new File("data.txt");
         System.out.println(new Validator(dataFile).isSorted()); // false

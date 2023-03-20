@@ -11,17 +11,17 @@ public class OrgStructureParserImpl implements OrgStructureParser {
     @Override
     public Employee parseStructure(File csvFile) throws IOException {
         Map<Long, Employee> employees = readCsvFile(csvFile);
-        Employee result = null;
+        Employee boss = null;
         for (Employee employee : employees.values()) {
             if (employee.getBossId() == 0) {
-                result = employee;
+                boss = employee;
             } else {
-                Employee boss = employees.get(employee.getBossId());
-                employee.setBoss(boss);
-                boss.getSubordinate().add(employee);
+                Employee currentBoss = employees.get(employee.getBossId());
+                employee.setBoss(currentBoss);
+                currentBoss.getSubordinate().add(employee);
             }
         }
-        return result;
+        return boss;
     }
 
     private Map<Long, Employee> readCsvFile(File csvFile) throws FileNotFoundException {
@@ -29,17 +29,21 @@ public class OrgStructureParserImpl implements OrgStructureParser {
         try (Scanner scanner = new Scanner(csvFile)) {
             scanner.nextLine();
             while (scanner.hasNextLine()) {
-                String[] data = scanner.nextLine().split(";");
-
-                Employee newEmployee = new Employee();
-                newEmployee.setId(Long.parseLong(data[0]));
-                newEmployee.setBossId(Long.parseLong(data[1].isEmpty() ? "0" : data[1]));
-                newEmployee.setName(data[2]);
-                newEmployee.setPosition(data[3]);
-
+                Employee newEmployee = readEmployee(scanner.nextLine());
                 result.put(newEmployee.getId(), newEmployee);
             }
         }
         return result;
+    }
+
+    private Employee readEmployee(String lineFromCsvFile) {
+        String[] data = lineFromCsvFile.split(";");
+
+        Employee employee = new Employee();
+        employee.setId(Long.parseLong(data[0]));
+        employee.setBossId(Long.parseLong(data[1].isEmpty() ? "0" : data[1]));
+        employee.setName(data[2]);
+        employee.setPosition(data[3]);
+        return employee;
     }
 }

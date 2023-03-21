@@ -5,7 +5,11 @@ import java.nio.file.*;
 import java.util.*;
 
 public class Sorter {
-    private static final int SIZE_OF_PART = 1_000_000;
+    private final int sizeOfPart;
+
+    public Sorter(int sizeOfPart) {
+        this.sizeOfPart = sizeOfPart;
+    }
 
     public File sortFile(File dataFile) throws IOException {
         Queue<File> files = splitIntoSortedFiles(dataFile);
@@ -33,8 +37,8 @@ public class Sorter {
     }
 
     private List<Long> getSortedDataPart(Scanner scanner) {
-        List<Long> tempList = new ArrayList<>(SIZE_OF_PART);
-        for (int i = 0; i < SIZE_OF_PART && scanner.hasNextLong(); i++) {
+        List<Long> tempList = new ArrayList<>(sizeOfPart);
+        for (int i = 0; i < sizeOfPart && scanner.hasNextLong(); i++) {
             tempList.add(scanner.nextLong());
         }
         Collections.sort(tempList);
@@ -93,6 +97,8 @@ public class Sorter {
             }
             pw.flush();
         }
+        file1.delete();
+        file2.delete();
         return tempFile;
     }
 

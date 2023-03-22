@@ -1,4 +1,4 @@
-package lesson2;
+package lesson2.statsAccumulator;
 
 public class StatsAccumulatorImpl implements StatsAccumulator {
     private int min = Integer.MAX_VALUE;

@@ -1,4 +1,4 @@
-package lesson2;
+package lesson2.snilsValidator;
 
 public interface SnilsValidator {
     /**

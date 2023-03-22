@@ -1,4 +1,4 @@
-package lesson2;
+package lesson2.complexNumbers;
 
 public class ComplexNumber {
     private final double realPart;

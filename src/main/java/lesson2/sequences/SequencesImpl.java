@@ -1,4 +1,4 @@
-package lesson2;
+package lesson2.sequences;
 
 public class SequencesImpl implements Sequences{
     @Override

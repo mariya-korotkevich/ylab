@@ -1,4 +1,4 @@
-package lesson2;
+package lesson2.snilsValidator;
 
 public class SnilsValidatorImpl implements SnilsValidator {
     @Override

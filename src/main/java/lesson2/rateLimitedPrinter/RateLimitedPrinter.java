@@ -1,4 +1,4 @@
-package lesson2;
+package lesson2.rateLimitedPrinter;
 
 public class RateLimitedPrinter {
     private final int interval;

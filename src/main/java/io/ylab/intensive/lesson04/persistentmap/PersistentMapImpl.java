@@ -27,10 +27,7 @@ public class PersistentMapImpl implements PersistentMap {
 
     @Override
     public boolean containsKey(String key) throws SQLException {
-        String query = "select exists(\n"
-                + "\tselect * from persistent_map\n"
-                + "\twhere map_name = ? and key = ?) as exists\n"
-                + ";";
+        String query = "select exists(select * from persistent_map where map_name = ? and key = ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, mapName);
@@ -45,10 +42,7 @@ public class PersistentMapImpl implements PersistentMap {
 
     @Override
     public List<String> getKeys() throws SQLException {
-        String query = "select key\n"
-                + "\tfrom persistent_map\n"
-                + "\twhere map_name = ?\n"
-                + ";";
+        String query = "select key from persistent_map where map_name = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, mapName);
@@ -63,10 +57,7 @@ public class PersistentMapImpl implements PersistentMap {
 
     @Override
     public String get(String key) throws SQLException {
-        String query = "select value\n"
-                + "\tfrom persistent_map\n"
-                + "\twhere map_name = ? and key = ?\n"
-                + ";";
+        String query = "select value from persistent_map where map_name = ? and key = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, mapName);
@@ -81,9 +72,7 @@ public class PersistentMapImpl implements PersistentMap {
 
     @Override
     public void remove(String key) throws SQLException {
-        String query = "delete from persistent_map\n"
-                + "\twhere map_name = ? and key = ?\n"
-                + ";";
+        String query = "delete from persistent_map where map_name = ? and key = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, mapName);
@@ -95,31 +84,9 @@ public class PersistentMapImpl implements PersistentMap {
     @Override
     public void put(String key, String value) throws SQLException {
         if (containsKey(key)) {
-            updateValue(key, value);
-        } else {
-            setValue(key, value);
+            remove(key);
         }
-    }
-
-    private void updateValue(String key, String value) throws SQLException {
-        String query = "update persistent_map\n"
-                    + "\tset value = ?\n"
-                    + "\twhere map_name = ? and key = ?\n"
-                    + ";";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, value);
-            statement.setString(2, mapName);
-            statement.setString(3, key);
-            statement.execute();
-        }
-    }
-
-    private void setValue(String key, String value) throws SQLException{
-        String query = "insert into persistent_map\n"
-                    + "\t(map_name, KEY, value)\n"
-                    + "\tvalues (?, ?, ?)\n"
-                    + ";";
+        String query = "insert into persistent_map (map_name, KEY, value) values (?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, mapName);
@@ -131,9 +98,7 @@ public class PersistentMapImpl implements PersistentMap {
 
     @Override
     public void clear() throws SQLException {
-        String query = "delete from persistent_map\n"
-                + "\twhere map_name = ?\n"
-                + ";";
+        String query = "delete from persistent_map where map_name = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, mapName);

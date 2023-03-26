@@ -7,7 +7,7 @@ import java.io.File;
 import java.sql.SQLException;
 
 public class FileSorterTest {
-  public static void main(String[] args) throws SQLException {
+  public static void main(String[] args) throws SQLException{
     DataSource dataSource = initDb();
     File data = new File("data.txt");
     FileSorter fileSorter = new FileSortImpl(dataSource);

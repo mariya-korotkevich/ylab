@@ -83,15 +83,15 @@ public class PersistentMapImpl implements PersistentMap {
 
     @Override
     public void put(String key, String value) throws SQLException {
-        if (containsKey(key)) {
-            remove(key);
-        }
-        String query = "insert into persistent_map (map_name, KEY, value) values (?, ?, ?)";
+        String query = "delete from persistent_map where map_name = ? and key = ?;\n" +
+                       "insert into persistent_map (map_name, KEY, value) values (?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, mapName);
             statement.setString(2, key);
-            statement.setString(3, value);
+            statement.setString(3, mapName);
+            statement.setString(4, key);
+            statement.setString(5, value);
             statement.execute();
         }
     }

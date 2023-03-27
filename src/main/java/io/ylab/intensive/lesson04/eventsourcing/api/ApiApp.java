@@ -22,6 +22,7 @@ public class ApiApp {
         personApi.savePerson(2L, "Петр", "Петров", "Петрович");
         personApi.savePerson(3L, "Владимир", "Владимиров", "Владимирович");
         personApi.savePerson(4L, "Анна", "Иванова", "Владимировна");
+        Thread.sleep(1000);
 
         System.out.println("findAll() = " + personApi.findAll());
     }

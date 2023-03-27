@@ -33,31 +33,16 @@ public class PersonApiImpl implements PersonApi {
     public void deletePerson(Long personId) {
         Person person = new Person();
         person.setId(personId);
-
         sendMessage(new Message(person, Event.DELETE));
     }
 
     @Override
     public void savePerson(Long personId, String firstName, String lastName, String middleName) {
-        Person person = new Person();
-        person.setId(personId);
-        person.setName(firstName);
-        person.setLastName(lastName);
-        person.setMiddleName(middleName);
-
+        Person person = new Person(personId, firstName, lastName, middleName);
         sendMessage(new Message(person, Event.SAVE));
     }
 
-    private void sendMessage(Message message){
-
-        byte[] messageBytes;
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            messageBytes = objectMapper.writeValueAsBytes(message);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
+    private void sendMessage(Message message) {
         String exchangeName = "exc";
         String queueName = "queue";
         try (Connection connection = connectionFactory.newConnection();
@@ -65,11 +50,21 @@ public class PersonApiImpl implements PersonApi {
             channel.exchangeDeclare(exchangeName, BuiltinExchangeType.TOPIC);
             channel.queueDeclare(queueName, true, false, false, null);
             channel.queueBind(queueName, exchangeName, "*");
-
-            channel.basicPublish(exchangeName, "*", null, messageBytes);
+            channel.basicPublish(exchangeName, "*", null, getBytes(message));
         } catch (IOException | TimeoutException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+    }
+
+    private byte[] getBytes(Message message) {
+        byte[] bytes = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            bytes = objectMapper.writeValueAsBytes(message);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
 
     @Override
@@ -79,38 +74,29 @@ public class PersonApiImpl implements PersonApi {
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, personId);
             ResultSet rs = statement.executeQuery();
-            if (rs.next()){
-                Person person = new Person();
-                person.setId(rs.getLong(1));
-                person.setName(rs.getString(2));
-                person.setLastName(rs.getString(3));
-                person.setMiddleName(rs.getString(4));
-                return person;
+            if (rs.next()) {
+                return new Person(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         return null;
     }
 
     @Override
     public List<Person> findAll() {
+        List<Person> people = new ArrayList<>();
         String query = "select person_id, first_name, last_name, middle_name from person";
         try (java.sql.Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             ResultSet rs = statement.executeQuery(query);
-            List<Person> people = new ArrayList<>();
-            while (rs.next()){
-                Person person = new Person();
-                person.setId(rs.getLong(1));
-                person.setName(rs.getString(2));
-                person.setLastName(rs.getString(3));
-                person.setMiddleName(rs.getString(4));
+            while (rs.next()) {
+                Person person = new Person(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4));
                 people.add(person);
             }
-            return people;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+        return people;
     }
 }

@@ -9,6 +9,7 @@ import io.ylab.intensive.lesson04.eventsourcing.Message;
 import io.ylab.intensive.lesson04.eventsourcing.Person;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -23,19 +24,10 @@ public class DbApp {
              Channel channel = connection.createChannel()) {
             channel.exchangeDeclare(exchangeName, BuiltinExchangeType.TOPIC);
             channel.queueDeclare(queueName, true, false, false, null);
-
-            ObjectMapper objectMapper = new ObjectMapper();
             while (!Thread.currentThread().isInterrupted()) {
                 GetResponse messageResponse = channel.basicGet(queueName, true);
                 if (messageResponse != null) {
-                    Message message = objectMapper.readValue(messageResponse.getBody(), Message.class);
-                    if (message.getEvent().equals(Event.SAVE)){
-                        save(message.getPerson(), dataSource);
-                    } else if (message.getEvent().equals(Event.DELETE)){
-                        delete(message.getPerson(), dataSource);
-                    } else {
-                        System.err.println("Неизвестное событие: " + message.getEvent());
-                    }
+                    messageProcessing(messageResponse, dataSource);
                 }
             }
         }
@@ -59,6 +51,18 @@ public class DbApp {
         return dataSource;
     }
 
+    private static void messageProcessing(GetResponse messageResponse, DataSource dataSource) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Message message = objectMapper.readValue(messageResponse.getBody(), Message.class);
+        if (Event.SAVE.equals(message.getEvent())){
+            save(message.getPerson(), dataSource);
+        } else if (Event.DELETE.equals(message.getEvent())){
+            delete(message.getPerson(), dataSource);
+        } else {
+            System.err.println("Неизвестное событие: " + message.getEvent());
+        }
+    }
+
     private static void save(Person person, DataSource dataSource){
         String query = "insert into person (person_id, first_name, last_name, middle_name) values (?, ?, ?, ?)" +
                 "ON CONFLICT (person_id) DO UPDATE SET first_name=?, last_name=?, middle_name=?";
@@ -71,8 +75,8 @@ public class DbApp {
             statement.setString(5, person.getName());
             statement.setString(6, person.getLastName());
             statement.setString(7, person.getMiddleName());
-            int i = statement.executeUpdate();
-            System.out.println("i = " + i + "; id = " + person.getId());
+            statement.execute();
+            System.out.println("Добавлена/обновлена запись с id = " + person.getId());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -83,7 +87,8 @@ public class DbApp {
         try (java.sql.Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, person.getId());
-            statement.execute();
+            System.out.println("Удаление записи с id = " + person.getId()
+                    + ". Количество удаленных записей: " + statement.executeUpdate());
         } catch (SQLException e) {
             e.printStackTrace();
         }

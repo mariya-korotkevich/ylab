@@ -1,10 +1,15 @@
 package io.ylab.intensive.lesson04.eventsourcing.db;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.*;
 import io.ylab.intensive.lesson04.DbUtil;
 import io.ylab.intensive.lesson04.RabbitMQUtil;
+import io.ylab.intensive.lesson04.eventsourcing.Event;
+import io.ylab.intensive.lesson04.eventsourcing.Message;
+import io.ylab.intensive.lesson04.eventsourcing.Person;
 
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class DbApp {
@@ -12,18 +17,25 @@ public class DbApp {
         DataSource dataSource = initDb();
         ConnectionFactory connectionFactory = initMQ();
 
-        // тут пишем создание и запуск приложения работы с БД
-
+        String exchangeName = "exc";
         String queueName = "queue";
         try (Connection connection = connectionFactory.newConnection();
              Channel channel = connection.createChannel()) {
-            channel.exchangeDeclare("exc", BuiltinExchangeType.TOPIC);
+            channel.exchangeDeclare(exchangeName, BuiltinExchangeType.TOPIC);
             channel.queueDeclare(queueName, true, false, false, null);
+
+            ObjectMapper objectMapper = new ObjectMapper();
             while (!Thread.currentThread().isInterrupted()) {
-                GetResponse message = channel.basicGet(queueName, true);
-                if (message != null) {
-                    String received = new String(message.getBody());
-                    System.out.println(received);
+                GetResponse messageResponse = channel.basicGet(queueName, true);
+                if (messageResponse != null) {
+                    Message message = objectMapper.readValue(messageResponse.getBody(), Message.class);
+                    if (message.getEvent().equals(Event.SAVE)){
+                        save(message.getPerson(), dataSource);
+                    } else if (message.getEvent().equals(Event.DELETE)){
+                        delete(message.getPerson(), dataSource);
+                    } else {
+                        System.err.println("Неизвестное событие: " + message.getEvent());
+                    }
                 }
             }
         }
@@ -45,5 +57,35 @@ public class DbApp {
         DataSource dataSource = DbUtil.buildDataSource();
         DbUtil.applyDdl(ddl, dataSource);
         return dataSource;
+    }
+
+    private static void save(Person person, DataSource dataSource){
+        String query = "insert into person (person_id, first_name, last_name, middle_name) values (?, ?, ?, ?)" +
+                "ON CONFLICT (person_id) DO UPDATE SET first_name=?, last_name=?, middle_name=?";
+        try (java.sql.Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setLong(1, person.getId());
+            statement.setString(2, person.getName());
+            statement.setString(3, person.getLastName());
+            statement.setString(4, person.getMiddleName());
+            statement.setString(5, person.getName());
+            statement.setString(6, person.getLastName());
+            statement.setString(7, person.getMiddleName());
+            int i = statement.executeUpdate();
+            System.out.println("i = " + i + "; id = " + person.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void delete(Person person, DataSource dataSource){
+        String query = "delete from person where person_id = ?";
+        try (java.sql.Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setLong(1, person.getId());
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

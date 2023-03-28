@@ -74,6 +74,7 @@ public class PersonApiImpl implements PersonApi {
 
     @Override
     public Person findPerson(Long personId) {
+        Person findPerson = null;
         String query = "select person_id,\n" +
                 "first_name,\n" +
                 "last_name,\n" +
@@ -85,14 +86,13 @@ public class PersonApiImpl implements PersonApi {
             statement.setLong(1, personId);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                Person person = new Person(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4));
-                rs.close();
-                return person;
+                findPerson = new Person(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4));
             }
+            rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return findPerson;
     }
 
     @Override

@@ -38,11 +38,11 @@ public class FileSortImpl implements FileSorter {
     }
 
     private File getSortedFile() {
-        File result = new File("sorted_data.txt");
+        File sortedFile = new File("sorted_data.txt");
         String query = "select val from numbers order by val desc";
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
-             PrintWriter pw = new PrintWriter(result)) {
+             PrintWriter pw = new PrintWriter(sortedFile)) {
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()) {
                 pw.println(rs.getLong(1));
@@ -52,7 +52,7 @@ public class FileSortImpl implements FileSorter {
         } catch (FileNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
-        return result;
+        return sortedFile;
     }
 
     private void deleteData(){

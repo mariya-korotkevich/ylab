@@ -33,11 +33,11 @@ public class PersistentMapImpl implements PersistentMap {
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, mapName);
             statement.setString(2, key);
-            ResultSet rs = statement.executeQuery();
-            if (rs.next()){
-                result = rs.getBoolean(1);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    result = rs.getBoolean(1);
+                }
             }
-            rs.close();
         }
         return result;
     }
@@ -49,11 +49,11 @@ public class PersistentMapImpl implements PersistentMap {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, mapName);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()){
-                keys.add(rs.getString(1));
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    keys.add(rs.getString(1));
+                }
             }
-            rs.close();
         }
         return keys;
     }
@@ -66,11 +66,11 @@ public class PersistentMapImpl implements PersistentMap {
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, mapName);
             statement.setString(2, key);
-            ResultSet rs = statement.executeQuery();
-            if (rs.next()){
-                value = rs.getString(1);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    value = rs.getString(1);
+                }
             }
-            rs.close();
         }
         return value;
     }
@@ -89,7 +89,7 @@ public class PersistentMapImpl implements PersistentMap {
     @Override
     public void put(String key, String value) throws SQLException {
         String query = "delete from persistent_map where map_name = ? and key = ?;\n" +
-                       "insert into persistent_map (map_name, KEY, value) values (?, ?, ?)";
+                "insert into persistent_map (map_name, KEY, value) values (?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, mapName);

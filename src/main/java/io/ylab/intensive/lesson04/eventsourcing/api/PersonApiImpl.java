@@ -84,11 +84,11 @@ public class PersonApiImpl implements PersonApi {
         try (java.sql.Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, personId);
-            ResultSet rs = statement.executeQuery();
-            if (rs.next()) {
-                findPerson = new Person(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4));
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    findPerson = new Person(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4));
+                }
             }
-            rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -104,13 +104,12 @@ public class PersonApiImpl implements PersonApi {
                 "middle_name\n" +
                 "from person";
         try (java.sql.Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            ResultSet rs = statement.executeQuery(query);
+             Statement statement = connection.createStatement();
+             ResultSet rs = statement.executeQuery(query)) {
             while (rs.next()) {
                 Person person = new Person(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4));
                 people.add(person);
             }
-            rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

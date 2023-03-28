@@ -47,6 +47,7 @@ public class FileSortImpl implements FileSorter {
             while (rs.next()) {
                 pw.println(rs.getLong(1));
             }
+            rs.close();
             pw.flush();
         } catch (FileNotFoundException | SQLException e) {
             throw new RuntimeException(e);

@@ -85,7 +85,9 @@ public class PersonApiImpl implements PersonApi {
             statement.setLong(1, personId);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                return new Person(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4));
+                Person person = new Person(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4));
+                rs.close();
+                return person;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -108,6 +110,7 @@ public class PersonApiImpl implements PersonApi {
                 Person person = new Person(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4));
                 people.add(person);
             }
+            rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

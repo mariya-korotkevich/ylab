@@ -50,6 +50,9 @@ public class Person {
 
   @Override
   public String toString() {
-    return String.format("%s %s %s (%d)", name, middleName, lastName, id);
+    return String.format("%s %s %s (%d)",
+            name == null ? "" : name,
+            middleName == null ? "" : middleName,
+            lastName == null ? "" : lastName, id);
   }
 }

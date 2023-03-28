@@ -59,7 +59,7 @@ public class DbApp {
         } else if (Event.DELETE.equals(message.getEvent())){
             delete(message.getPerson(), dataSource);
         } else {
-            System.err.println("Неизвестное событие: " + message.getEvent());
+            System.err.println("Неизвестное событие: " + message);
         }
     }
 

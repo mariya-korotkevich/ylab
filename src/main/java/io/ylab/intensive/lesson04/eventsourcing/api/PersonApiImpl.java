@@ -50,7 +50,12 @@ public class PersonApiImpl implements PersonApi {
             channel.exchangeDeclare(exchangeName, BuiltinExchangeType.TOPIC);
             channel.queueDeclare(queueName, true, false, false, null);
             channel.queueBind(queueName, exchangeName, "*");
-            channel.basicPublish(exchangeName, "*", null, getBytes(message));
+            byte[] bytes = getBytes(message);
+            if (bytes != null && bytes.length > 0) {
+                channel.basicPublish(exchangeName, "*", null, bytes);
+            } else {
+                System.err.println("Не удалось отправить сообщение: " + message);
+            }
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }
@@ -69,7 +74,12 @@ public class PersonApiImpl implements PersonApi {
 
     @Override
     public Person findPerson(Long personId) {
-        String query = "select person_id, first_name, last_name, middle_name from person where person_id = ?";
+        String query = "select person_id,\n" +
+                "first_name,\n" +
+                "last_name,\n" +
+                "middle_name\n" +
+                "from person\n" +
+                "where person_id = ?";
         try (java.sql.Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, personId);
@@ -86,7 +96,11 @@ public class PersonApiImpl implements PersonApi {
     @Override
     public List<Person> findAll() {
         List<Person> people = new ArrayList<>();
-        String query = "select person_id, first_name, last_name, middle_name from person";
+        String query = "select person_id,\n" +
+                "first_name,\n" +
+                "last_name,\n" +
+                "middle_name\n" +
+                "from person";
         try (java.sql.Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             ResultSet rs = statement.executeQuery(query);

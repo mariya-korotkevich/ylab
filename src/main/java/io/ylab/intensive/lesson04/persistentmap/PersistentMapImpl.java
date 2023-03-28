@@ -27,6 +27,7 @@ public class PersistentMapImpl implements PersistentMap {
 
     @Override
     public boolean containsKey(String key) throws SQLException {
+        boolean result = false;
         String query = "select exists(select * from persistent_map where map_name = ? and key = ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -34,32 +35,32 @@ public class PersistentMapImpl implements PersistentMap {
             statement.setString(2, key);
             ResultSet rs = statement.executeQuery();
             if (rs.next()){
-                boolean result = rs.getBoolean(1);
-                rs.close();
-                return result;
+                result = rs.getBoolean(1);
             }
+            rs.close();
         }
-        return false;
+        return result;
     }
 
     @Override
     public List<String> getKeys() throws SQLException {
+        List<String> keys = new ArrayList<>();
         String query = "select key from persistent_map where map_name = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, mapName);
             ResultSet rs = statement.executeQuery();
-            List<String> result = new ArrayList<>();
             while (rs.next()){
-                result.add(rs.getString(1));
+                keys.add(rs.getString(1));
             }
             rs.close();
-            return result;
         }
+        return keys;
     }
 
     @Override
     public String get(String key) throws SQLException {
+        String value = null;
         String query = "select value from persistent_map where map_name = ? and key = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -67,12 +68,11 @@ public class PersistentMapImpl implements PersistentMap {
             statement.setString(2, key);
             ResultSet rs = statement.executeQuery();
             if (rs.next()){
-                String result = rs.getString(1);
-                rs.close();
-                return result;
+                value = rs.getString(1);
             }
+            rs.close();
         }
-        return null;
+        return value;
     }
 
     @Override

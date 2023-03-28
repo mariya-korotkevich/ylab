@@ -23,6 +23,8 @@ public class PersistenceMapTest {
 
         persistentMap.clear();
         System.out.println("getKeys() = " + persistentMap.getKeys());
+        System.out.println("get(\"key2\") = " + persistentMap.get("key2"));
+        System.out.println("containsKey(\"key2\") = " + persistentMap.containsKey("key2"));
     }
 
     public static DataSource initDb() throws SQLException {

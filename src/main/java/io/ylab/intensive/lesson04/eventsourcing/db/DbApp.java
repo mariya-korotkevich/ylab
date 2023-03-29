@@ -14,8 +14,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class DbApp {
+
+    private static DataSource dataSource;
     public static void main(String[] args) throws Exception {
-        DataSource dataSource = initDb();
+        dataSource = initDb();
         ConnectionFactory connectionFactory = initMQ();
 
         String exchangeName = "exc";
@@ -27,7 +29,7 @@ public class DbApp {
             while (!Thread.currentThread().isInterrupted()) {
                 GetResponse messageResponse = channel.basicGet(queueName, true);
                 if (messageResponse != null) {
-                    messageProcessing(messageResponse, dataSource);
+                    messageProcessing(messageResponse);
                 }
             }
         }
@@ -51,19 +53,19 @@ public class DbApp {
         return dataSource;
     }
 
-    private static void messageProcessing(GetResponse messageResponse, DataSource dataSource) throws IOException {
+    private static void messageProcessing(GetResponse messageResponse) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         Message message = objectMapper.readValue(messageResponse.getBody(), Message.class);
         if (Event.SAVE.equals(message.getEvent())){
-            save(message.getPerson(), dataSource);
+            save(message.getPerson());
         } else if (Event.DELETE.equals(message.getEvent())){
-            delete(message.getPerson(), dataSource);
+            delete(message.getPerson());
         } else {
             System.err.println("Неизвестное событие: " + message);
         }
     }
 
-    private static void save(Person person, DataSource dataSource){
+    private static void save(Person person){
         String query = "insert into person (person_id, first_name, last_name, middle_name) values (?, ?, ?, ?)" +
                 "ON CONFLICT (person_id) DO UPDATE SET first_name=?, last_name=?, middle_name=?";
         try (java.sql.Connection connection = dataSource.getConnection();
@@ -82,7 +84,7 @@ public class DbApp {
         }
     }
 
-    private static void delete(Person person, DataSource dataSource){
+    private static void delete(Person person){
         String query = "delete from person where person_id = ?";
         try (java.sql.Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {

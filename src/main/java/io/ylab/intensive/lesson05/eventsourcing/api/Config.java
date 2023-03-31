@@ -3,11 +3,13 @@ package io.ylab.intensive.lesson05.eventsourcing.api;
 import com.rabbitmq.client.ConnectionFactory;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 
 @Configuration
+@ComponentScan(basePackages = "io.ylab.intensive.lesson05.eventsourcing.api")
 public class Config {
   
   @Bean

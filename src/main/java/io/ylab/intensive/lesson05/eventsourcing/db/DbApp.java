@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class DbApp {
     private final MessageProcessorImpl messageProcessor;
-    private final ConnectionFactory connectionFactory;
+    private final RabbitClient rabbitClient;
 
     @Autowired
-    public DbApp(MessageProcessorImpl messageProcessor, ConnectionFactory connectionFactory) {
+    public DbApp(MessageProcessorImpl messageProcessor, RabbitClient rabbitClient) {
         this.messageProcessor = messageProcessor;
-        this.connectionFactory = connectionFactory;
+        this.rabbitClient = rabbitClient;
     }
 
     public static void main(String[] args) throws Exception {
@@ -25,17 +25,10 @@ public class DbApp {
     }
 
     public void readMessages() throws Exception {
-        String exchangeName = "exc";
-        String queueName = "queue";
-        try (Connection connection = connectionFactory.newConnection();
-             Channel channel = connection.createChannel()) {
-            channel.exchangeDeclare(exchangeName, BuiltinExchangeType.TOPIC);
-            channel.queueDeclare(queueName, true, false, false, null);
-            while (!Thread.currentThread().isInterrupted()) {
-                GetResponse messageResponse = channel.basicGet(queueName, true);
-                if (messageResponse != null) {
-                    messageProcessor.messageProcessing(messageResponse);
-                }
+        while (!Thread.currentThread().isInterrupted()) {
+            GetResponse messageResponse = rabbitClient.readMessage();
+            if (messageResponse != null) {
+                messageProcessor.messageProcessing(messageResponse);
             }
         }
     }

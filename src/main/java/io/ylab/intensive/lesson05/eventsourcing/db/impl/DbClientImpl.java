@@ -1,15 +1,17 @@
-package io.ylab.intensive.lesson05.eventsourcing.db;
+package io.ylab.intensive.lesson05.eventsourcing.db.impl;
 
 import io.ylab.intensive.lesson05.eventsourcing.Person;
+import io.ylab.intensive.lesson05.eventsourcing.db.abstracts.DbClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 @Component
-public class DbClientImpl implements DbClient{
+public class DbClientImpl implements DbClient {
 
     private final DataSource dataSource;
 
@@ -22,7 +24,7 @@ public class DbClientImpl implements DbClient{
     public void save(Person person) {
         String query = "insert into person (person_id, first_name, last_name, middle_name) values (?, ?, ?, ?)" +
                 "ON CONFLICT (person_id) DO UPDATE SET first_name=?, last_name=?, middle_name=?";
-        try (java.sql.Connection connection = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, person.getId());
             statement.setString(2, person.getName());
@@ -41,7 +43,7 @@ public class DbClientImpl implements DbClient{
     @Override
     public void delete(Person person) {
         String query = "delete from person where person_id = ?";
-        try (java.sql.Connection connection = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, person.getId());
             System.out.println("Удаление записи с id = " + person.getId()

@@ -1,17 +1,19 @@
 package io.ylab.intensive.lesson05.eventsourcing.db;
 
 import com.rabbitmq.client.*;
+import io.ylab.intensive.lesson05.eventsourcing.db.abstracts.MessageProcessor;
+import io.ylab.intensive.lesson05.eventsourcing.db.abstracts.RabbitClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DbApp {
-    private final MessageProcessorImpl messageProcessor;
+    private final MessageProcessor messageProcessor;
     private final RabbitClient rabbitClient;
 
     @Autowired
-    public DbApp(MessageProcessorImpl messageProcessor, RabbitClient rabbitClient) {
+    public DbApp(MessageProcessor messageProcessor, RabbitClient rabbitClient) {
         this.messageProcessor = messageProcessor;
         this.rabbitClient = rabbitClient;
     }

@@ -1,6 +1,7 @@
-package io.ylab.intensive.lesson05.eventsourcing.api;
+package io.ylab.intensive.lesson05.eventsourcing.api.impl;
 
 import io.ylab.intensive.lesson05.eventsourcing.Person;
+import io.ylab.intensive.lesson05.eventsourcing.api.abstracts.DbReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class DbReaderImp implements DbReader{
+public class DbReaderImp implements DbReader {
     private final DataSource dataSource;
 
     @Autowired

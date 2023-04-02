@@ -1,16 +1,18 @@
-package io.ylab.intensive.lesson05.eventsourcing.db;
+package io.ylab.intensive.lesson05.eventsourcing.db.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.GetResponse;
 import io.ylab.intensive.lesson05.eventsourcing.Event;
 import io.ylab.intensive.lesson05.eventsourcing.Message;
+import io.ylab.intensive.lesson05.eventsourcing.db.abstracts.DbClient;
+import io.ylab.intensive.lesson05.eventsourcing.db.abstracts.MessageProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 @Component
-public class MessageProcessorImpl implements MessageProcessor{
+public class MessageProcessorImpl implements MessageProcessor {
     private final DbClient dbClient;
 
     @Autowired

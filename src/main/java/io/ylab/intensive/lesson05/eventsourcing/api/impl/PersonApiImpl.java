@@ -1,8 +1,11 @@
-package io.ylab.intensive.lesson05.eventsourcing.api;
+package io.ylab.intensive.lesson05.eventsourcing.api.impl;
 
 import io.ylab.intensive.lesson05.eventsourcing.Event;
 import io.ylab.intensive.lesson05.eventsourcing.Message;
 import io.ylab.intensive.lesson05.eventsourcing.Person;
+import io.ylab.intensive.lesson05.eventsourcing.api.abstracts.DbReader;
+import io.ylab.intensive.lesson05.eventsourcing.api.abstracts.PersonApi;
+import io.ylab.intensive.lesson05.eventsourcing.api.abstracts.RabbitClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

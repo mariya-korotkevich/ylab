@@ -1,5 +1,6 @@
 package io.ylab.intensive.lesson05.eventsourcing.api;
 
+import io.ylab.intensive.lesson05.eventsourcing.api.abstracts.PersonApi;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class ApiApp {

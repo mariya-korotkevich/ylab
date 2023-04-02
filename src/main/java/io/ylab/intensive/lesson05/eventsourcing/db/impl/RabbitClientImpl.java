@@ -1,6 +1,7 @@
-package io.ylab.intensive.lesson05.eventsourcing.db;
+package io.ylab.intensive.lesson05.eventsourcing.db.impl;
 
 import com.rabbitmq.client.*;
+import io.ylab.intensive.lesson05.eventsourcing.db.abstracts.RabbitClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

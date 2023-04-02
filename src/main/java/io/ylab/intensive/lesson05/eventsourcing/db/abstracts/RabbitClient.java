@@ -1,4 +1,4 @@
-package io.ylab.intensive.lesson05.eventsourcing.db;
+package io.ylab.intensive.lesson05.eventsourcing.db.abstracts;
 
 import com.rabbitmq.client.GetResponse;
 

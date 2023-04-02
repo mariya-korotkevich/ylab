@@ -1,4 +1,4 @@
-package io.ylab.intensive.lesson05.eventsourcing.api;
+package io.ylab.intensive.lesson05.eventsourcing.api.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,6 +7,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import io.ylab.intensive.lesson05.eventsourcing.Message;
+import io.ylab.intensive.lesson05.eventsourcing.api.abstracts.RabbitClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 @Component
-public class RabbitClientImpl implements RabbitClient{
+public class RabbitClientImpl implements RabbitClient {
     private final ConnectionFactory connectionFactory;
 
     @Autowired

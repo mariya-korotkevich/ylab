@@ -1,12 +1,14 @@
 package io.ylab.intensive.lesson05.messagefilter;
 
 import com.rabbitmq.client.ConnectionFactory;
+import io.ylab.intensive.lesson05.DbUtil;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 @Configuration
 @ComponentScan("io.ylab.intensive.lesson05.messagefilter")
@@ -24,13 +26,22 @@ public class Config {
     }
 
     @Bean
-    public DataSource dataSource() {
+    public DataSource dataSource() throws SQLException {
         PGSimpleDataSource dataSource = new PGSimpleDataSource();
         dataSource.setServerName("localhost");
         dataSource.setUser("postgres");
         dataSource.setPassword("postgres");
         dataSource.setDatabaseName("postgres");
         dataSource.setPortNumber(5432);
+
+        String ddl = ""
+                + "drop table if exists obscene_words;"
+                + "create table if not exists obscene_words (\n"
+                + "word_id serial primary key,\n"
+                + "word varchar\n"
+                + ")";
+        DbUtil.applyDdl(ddl, dataSource);
+
         return dataSource;
     }
 }

@@ -3,8 +3,6 @@ package io.ylab.intensive.lesson05.messagefilter.impl;
 import io.ylab.intensive.lesson05.DbUtil;
 import io.ylab.intensive.lesson05.messagefilter.abstracts.DbClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -20,15 +18,6 @@ public class DbClientImpl implements DbClient {
     @Autowired
     public DbClientImpl(DataSource dataSource) {
         this.dataSource = dataSource;
-    }
-
-    @EventListener
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        try {
-            loadWordsFromFile(new File("words.txt"));
-        } catch (SQLException | FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

@@ -19,28 +19,14 @@ public class SQLQueryBuilderImpl implements SQLQueryBuilder {
 
     @Override
     public String queryForTable(String tableName) throws SQLException {
-        if (!getTables().contains(tableName)) {
+        if (!containsTable(tableName)) {
             return null;
         }
-
         List<String> columns = getColumnsForTable(tableName);
-
         if (columns.size() == 0) {
             return null;
         }
-
-        StringBuilder builder = new StringBuilder();
-        columns.forEach(s -> {
-            if (builder.length() == 0) {
-                builder.append("select ");
-            } else {
-                builder.append(", ");
-            }
-            builder.append(s);
-        });
-        builder.append(" from ");
-        builder.append(tableName);
-        return builder.toString();
+        return buildSelectQuery(tableName, columns);
     }
 
     private List<String> getColumnsForTable(String tableName) throws SQLException {
@@ -54,6 +40,29 @@ public class SQLQueryBuilderImpl implements SQLQueryBuilder {
             }
         }
         return columns;
+    }
+
+    private boolean containsTable(String tableName) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            try (ResultSet rs = databaseMetaData.getTables(null, null, tableName, new String[]{"TABLE", "SYSTEM TABLE"})) {
+                if (rs.next()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private String buildSelectQuery(String tableName, List<String> columns){
+        StringBuilder builder = new StringBuilder();
+        columns.forEach(s -> {
+            builder.append(builder.length() == 0 ? "Select " : ", ");
+            builder.append(s);
+        });
+        builder.append(" from ");
+        builder.append(tableName);
+        return builder.toString();
     }
 
     @Override

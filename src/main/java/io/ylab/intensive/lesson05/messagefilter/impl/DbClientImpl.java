@@ -1,7 +1,10 @@
 package io.ylab.intensive.lesson05.messagefilter.impl;
 
+import io.ylab.intensive.lesson05.DbUtil;
 import io.ylab.intensive.lesson05.messagefilter.abstracts.DbClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -19,9 +22,20 @@ public class DbClientImpl implements DbClient {
         this.dataSource = dataSource;
     }
 
+    @EventListener
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        try {
+            loadWordsFromFile(new File("words.txt"));
+        } catch (SQLException | FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
-    public void loadWordsFromFile(File file) {
+    public void loadWordsFromFile(File file) throws SQLException, FileNotFoundException {
+        createTable();
         cleanTable();
+
         String query = "insert into obscene_words (word) values (?)";
         try (Scanner scanner = new Scanner(file);
              Connection connection = dataSource.getConnection();
@@ -31,19 +45,21 @@ public class DbClientImpl implements DbClient {
                 statement.addBatch();
             }
             statement.executeBatch();
-        } catch (FileNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
-    private void cleanTable() {
-        String query = "TRUNCATE TABLE obscene_words";
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()){
-            statement.execute(query);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    private void cleanTable() throws SQLException {
+        String query = "truncate table obscene_words";
+        DbUtil.applyDdl(query, dataSource);
+    }
+
+    private void createTable() throws SQLException {
+        String query = ""
+                + "create table if not exists obscene_words (\n"
+                + "word_id serial primary key,\n"
+                + "word varchar\n"
+                + ")";
+        DbUtil.applyDdl(query, dataSource);
     }
 
     @Override

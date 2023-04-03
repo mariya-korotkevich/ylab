@@ -33,14 +33,6 @@ public class Config {
         dataSource.setPassword("postgres");
         dataSource.setDatabaseName("postgres");
         dataSource.setPortNumber(5432);
-
-        String ddl = ""
-                + "create table if not exists obscene_words (\n"
-                + "word_id serial primary key,\n"
-                + "word varchar\n"
-                + ")";
-        DbUtil.applyDdl(ddl, dataSource);
-
         return dataSource;
     }
 }

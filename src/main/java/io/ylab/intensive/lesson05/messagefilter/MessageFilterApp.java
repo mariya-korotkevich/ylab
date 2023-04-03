@@ -1,24 +1,19 @@
 package io.ylab.intensive.lesson05.messagefilter;
 
 import com.rabbitmq.client.GetResponse;
-import io.ylab.intensive.lesson05.messagefilter.abstracts.DbClient;
 import io.ylab.intensive.lesson05.messagefilter.abstracts.MessageProcessor;
 import io.ylab.intensive.lesson05.messagefilter.abstracts.RabbitClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-
 @Component
 public class MessageFilterApp {
-    private final DbClient dbClient;
     private final RabbitClient rabbitClient;
     private final MessageProcessor messageProcessor;
 
     @Autowired
-    public MessageFilterApp(DbClient dbClient, RabbitClient rabbitClient, MessageProcessor messageProcessor) {
-        this.dbClient = dbClient;
+    public MessageFilterApp(RabbitClient rabbitClient, MessageProcessor messageProcessor) {
         this.rabbitClient = rabbitClient;
         this.messageProcessor = messageProcessor;
     }
@@ -32,12 +27,11 @@ public class MessageFilterApp {
     }
 
     public void filterMessages() {
-        dbClient.loadWordsFromFile(new File("words.txt"));
         while (!Thread.currentThread().isInterrupted()) {
             GetResponse messageResponse = rabbitClient.getMessage();
             if (messageResponse != null) {
-                String rightWords = messageProcessor.processing(messageResponse);
-                rabbitClient.sendMessage(rightWords);
+                String filterMessage = messageProcessor.processing(messageResponse);
+                rabbitClient.sendMessage(filterMessage);
             }
         }
     }

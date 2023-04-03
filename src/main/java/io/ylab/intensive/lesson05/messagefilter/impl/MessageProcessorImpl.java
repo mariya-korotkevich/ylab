@@ -49,6 +49,7 @@ public class MessageProcessorImpl implements MessageProcessor {
                 || c == ';'
                 || c == '?'
                 || c == '!'
+                || c == '\r'
                 || c == '\n';
     }
 }

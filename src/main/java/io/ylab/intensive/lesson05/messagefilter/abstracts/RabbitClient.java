@@ -5,5 +5,5 @@ import com.rabbitmq.client.GetResponse;
 public interface RabbitClient {
     GetResponse getMessage();
 
-    void sendMessage(String rightWords);
+    void sendMessage(String filterMessage);
 }

@@ -35,7 +35,6 @@ public class Config {
         dataSource.setPortNumber(5432);
 
         String ddl = ""
-                + "drop table if exists obscene_words;"
                 + "create table if not exists obscene_words (\n"
                 + "word_id serial primary key,\n"
                 + "word varchar\n"

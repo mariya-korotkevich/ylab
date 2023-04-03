@@ -32,7 +32,7 @@ public class RabbitClientImpl implements RabbitClient {
     }
 
     @Override
-    public void sendMessage(String rightWords) {
+    public void sendMessage(String filterMessage) {
         String exchangeName = "exc";
         String queueName = "output";
         try (Connection connection = connectionFactory.newConnection();
@@ -40,7 +40,7 @@ public class RabbitClientImpl implements RabbitClient {
             channel.exchangeDeclare(exchangeName, BuiltinExchangeType.TOPIC);
             channel.queueDeclare(queueName, true, false, false, null);
             channel.queueBind(queueName, exchangeName, "*");
-            channel.basicPublish(exchangeName, "*", null, rightWords.getBytes());
+            channel.basicPublish(exchangeName, "*", null, filterMessage.getBytes());
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }

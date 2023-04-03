@@ -4,4 +4,6 @@ import java.io.File;
 
 public interface DbClient {
     void loadWordsFromFile(File file);
+
+    boolean containsWord(String word);
 }

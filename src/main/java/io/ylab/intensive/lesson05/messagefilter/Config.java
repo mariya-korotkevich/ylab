@@ -1,7 +1,6 @@
 package io.ylab.intensive.lesson05.messagefilter;
 
 import com.rabbitmq.client.ConnectionFactory;
-import io.ylab.intensive.lesson05.DbUtil;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

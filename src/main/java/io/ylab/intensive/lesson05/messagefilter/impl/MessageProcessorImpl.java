@@ -5,9 +5,12 @@ import io.ylab.intensive.lesson05.messagefilter.abstracts.WordFilter;
 import io.ylab.intensive.lesson05.messagefilter.abstracts.MessageProcessor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class MessageProcessorImpl implements MessageProcessor {
     private final WordFilter wordFilter;
+    private final List<Character> wordSeparators = List.of('.', ',', ' ', ';', '?', '!', '\r', '\n');
 
     public MessageProcessorImpl(WordFilter wordFilter) {
         this.wordFilter = wordFilter;
@@ -43,13 +46,6 @@ public class MessageProcessorImpl implements MessageProcessor {
     }
 
     private boolean isWordSeparator(char c) {
-        return c == '.'
-                || c == ','
-                || c == ' '
-                || c == ';'
-                || c == '?'
-                || c == '!'
-                || c == '\r'
-                || c == '\n';
+        return wordSeparators.contains(c);
     }
 }

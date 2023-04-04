@@ -18,8 +18,8 @@ public class DbClientImpl implements DbClient {
 
     @Override
     public void loadWordsFromFile(File file) throws SQLException, FileNotFoundException {
-        createTable();
-        cleanTable();
+
+        prepareTable();
 
         String query = "insert into obscene_words (word) values (?)";
         try (Scanner scanner = new Scanner(file);
@@ -33,17 +33,12 @@ public class DbClientImpl implements DbClient {
         }
     }
 
-    private void cleanTable() throws SQLException {
-        String query = "truncate table obscene_words";
-        DbUtil.applyDdl(query, dataSource);
-    }
-
-    private void createTable() throws SQLException {
+    private void prepareTable() throws SQLException {
         String query = ""
                 + "create table if not exists obscene_words (\n"
                 + "word_id serial primary key,\n"
-                + "word varchar\n"
-                + ")";
+                + "word varchar);\n"
+                + "truncate table obscene_words;";
         DbUtil.applyDdl(query, dataSource);
     }
 

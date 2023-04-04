@@ -19,11 +19,9 @@ public class RabbitClientImpl implements RabbitClient {
 
     @Override
     public GetResponse getMessage() {
-        String exchangeName = "exc";
         String queueName = "input";
         try (Connection connection = connectionFactory.newConnection();
              Channel channel = connection.createChannel()) {
-            channel.exchangeDeclare(exchangeName, BuiltinExchangeType.TOPIC);
             channel.queueDeclare(queueName, true, false, false, null);
             return channel.basicGet(queueName, true);
         } catch (IOException | TimeoutException e) {
@@ -33,14 +31,11 @@ public class RabbitClientImpl implements RabbitClient {
 
     @Override
     public void sendMessage(String filterMessage) {
-        String exchangeName = "exc";
         String queueName = "output";
         try (Connection connection = connectionFactory.newConnection();
              Channel channel = connection.createChannel()) {
-            channel.exchangeDeclare(exchangeName, BuiltinExchangeType.TOPIC);
             channel.queueDeclare(queueName, true, false, false, null);
-            channel.queueBind(queueName, exchangeName, "*");
-            channel.basicPublish(exchangeName, "*", null, filterMessage.getBytes());
+            channel.basicPublish("", queueName, null, filterMessage.getBytes());
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }

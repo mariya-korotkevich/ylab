@@ -16,11 +16,9 @@ public class RabbitClientImpl implements RabbitClient {
 
     @Override
     public GetResponse getMessage() throws Exception {
-        String exchangeName = "exc";
         String queueName = "queue";
         try (Connection connection = connectionFactory.newConnection();
              Channel channel = connection.createChannel()) {
-            channel.exchangeDeclare(exchangeName, BuiltinExchangeType.TOPIC);
             channel.queueDeclare(queueName, true, false, false, null);
             return channel.basicGet(queueName, true);
         }

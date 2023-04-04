@@ -2,7 +2,6 @@ package io.ylab.intensive.lesson05.eventsourcing.api.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -25,16 +24,13 @@ public class RabbitClientImpl implements RabbitClient {
 
     @Override
     public void sendMessage(Message message) {
-        String exchangeName = "exc";
         String queueName = "queue";
         try (Connection connection = connectionFactory.newConnection();
              Channel channel = connection.createChannel()) {
-            channel.exchangeDeclare(exchangeName, BuiltinExchangeType.TOPIC);
             channel.queueDeclare(queueName, true, false, false, null);
-            channel.queueBind(queueName, exchangeName, "*");
             byte[] bytes = getBytes(message);
             if (bytes != null && bytes.length > 0) {
-                channel.basicPublish(exchangeName, "*", null, bytes);
+                channel.basicPublish("", queueName, null, bytes);
             } else {
                 System.err.println("Не удалось отправить сообщение: " + message);
             }

@@ -2,8 +2,6 @@ package io.ylab.intensive.lesson05.messagefilter.impl;
 
 import io.ylab.intensive.lesson05.DbUtil;
 import io.ylab.intensive.lesson05.messagefilter.abstracts.DbClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -11,11 +9,9 @@ import java.io.FileNotFoundException;
 import java.sql.*;
 import java.util.Scanner;
 
-@Component
 public class DbClientImpl implements DbClient {
     private final DataSource dataSource;
 
-    @Autowired
     public DbClientImpl(DataSource dataSource) {
         this.dataSource = dataSource;
     }

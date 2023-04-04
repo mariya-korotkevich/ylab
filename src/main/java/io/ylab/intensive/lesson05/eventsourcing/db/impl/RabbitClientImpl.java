@@ -15,7 +15,7 @@ public class RabbitClientImpl implements RabbitClient {
     }
 
     @Override
-    public GetResponse readMessage() throws Exception {
+    public GetResponse getMessage() throws Exception {
         String exchangeName = "exc";
         String queueName = "queue";
         try (Connection connection = connectionFactory.newConnection();

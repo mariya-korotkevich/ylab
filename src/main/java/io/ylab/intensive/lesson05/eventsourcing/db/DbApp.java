@@ -28,7 +28,7 @@ public class DbApp {
 
     public void readMessages() throws Exception {
         while (!Thread.currentThread().isInterrupted()) {
-            GetResponse messageResponse = rabbitClient.readMessage();
+            GetResponse messageResponse = rabbitClient.getMessage();
             if (messageResponse != null) {
                 messageProcessor.messageProcessing(messageResponse);
             }

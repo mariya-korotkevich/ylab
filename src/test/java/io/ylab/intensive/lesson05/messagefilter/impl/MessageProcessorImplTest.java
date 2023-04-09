@@ -5,6 +5,8 @@ import io.ylab.intensive.lesson05.messagefilter.abstracts.MessageProcessor;
 import io.ylab.intensive.lesson05.messagefilter.abstracts.WordFilter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +22,7 @@ class MessageProcessorImplTest {
     GetResponse getResponse = mock(GetResponse.class);
 
     @BeforeAll
-    static void init(){
+    static void init() {
         wordFilter = mock(WordFilter.class);
         when(wordFilter.filter("badWord")).thenReturn("b*****d");
         when(wordFilter.filter("goodWord")).thenReturn("goodWord");
@@ -28,72 +30,47 @@ class MessageProcessorImplTest {
     }
 
     @Test
-    void processingWhenEmptyStringThenReturnEmptyString() {
+    void processing_ShouldReturnEmptyStringForEmptyString() {
         when(getResponse.getBody()).thenReturn("".getBytes());
         String filterString = messageProcessor.processing(getResponse);
         assertEquals("", filterString);
     }
 
-    @Test
-    void processingWhenStringWithOneBadWordThenReturnFilterString() {
-        when(getResponse.getBody()).thenReturn("badWord".getBytes());
+    @ParameterizedTest
+    @CsvSource({"badWord,b*****d",
+            "badWord goodWord,b*****d goodWord",
+            "badWord.goodWord,b*****d.goodWord",
+            "badWord;goodWord,b*****d;goodWord",
+            "badWord!goodWord,b*****d!goodWord",
+            "badWord?goodWord,b*****d?goodWord"})
+    void processing_ShouldReturnFilterStringForStringWithBadWords(String input, String expected) {
+        when(getResponse.getBody()).thenReturn(input.getBytes());
         String filterString = messageProcessor.processing(getResponse);
-        assertEquals("b*****d", filterString);
+        assertEquals(expected, filterString);
     }
 
-    @Test
-    void processingWhenStringWithOneGoodWordThenReturnOriginalString() {
-        when(getResponse.getBody()).thenReturn("goodWord".getBytes());
+    @ParameterizedTest
+    @CsvSource({"badWord badWord,b*****d b*****d",
+            "badWord.badWord,b*****d.b*****d",
+            "badWord;badWord,b*****d;b*****d",
+            "badWord!badWord,b*****d!b*****d",
+            "badWord?badWord,b*****d?b*****d"})
+    void processing_ShouldReturnFilterStringForStringWithOnlyBadWords(String input, String expected) {
+        when(getResponse.getBody()).thenReturn(input.getBytes());
         String filterString = messageProcessor.processing(getResponse);
-        assertEquals("goodWord", filterString);
+        assertEquals(expected, filterString);
     }
 
-    @Test
-    void processingWhenBadWordAndGoodWordAndSpaceThenReturnFilterString() {
-        when(getResponse.getBody()).thenReturn("badWord goodWord".getBytes());
+    @ParameterizedTest
+    @CsvSource({"goodWord,goodWord",
+            "goodWord goodWord,goodWord goodWord",
+            "goodWord.goodWord,goodWord.goodWord",
+            "goodWord;goodWord,goodWord;goodWord",
+            "goodWord!goodWord,goodWord!goodWord",
+            "goodWord?goodWord,goodWord?goodWord"})
+    void processing_ShouldReturnOriginalStringForStringWithOnlyGoodWords(String input, String expected) {
+        when(getResponse.getBody()).thenReturn(input.getBytes());
         String filterString = messageProcessor.processing(getResponse);
-        assertEquals("b*****d goodWord", filterString);
-    }
-
-    @Test
-    void processingWhenBadWordAndGoodWordAndPointThenReturnFilterString() {
-        when(getResponse.getBody()).thenReturn("badWord.goodWord".getBytes());
-        String filterString = messageProcessor.processing(getResponse);
-        assertEquals("b*****d.goodWord", filterString);
-    }
-
-    @Test
-    void processingWhenBadWordAndGoodWordAndSemicolonThenReturnFilterString() {
-        when(getResponse.getBody()).thenReturn("badWord;goodWord".getBytes());
-        String filterString = messageProcessor.processing(getResponse);
-        assertEquals("b*****d;goodWord", filterString);
-    }
-
-    @Test
-    void processingWhenBadWordAndGoodWordAndExclamationPointThenReturnFilterString() {
-        when(getResponse.getBody()).thenReturn("badWord!goodWord".getBytes());
-        String filterString = messageProcessor.processing(getResponse);
-        assertEquals("b*****d!goodWord", filterString);
-    }
-
-    @Test
-    void processingWhenBadWordAndGoodWordAndQuestionMarkThenReturnFilterString() {
-        when(getResponse.getBody()).thenReturn("badWord?goodWord".getBytes());
-        String filterString = messageProcessor.processing(getResponse);
-        assertEquals("b*****d?goodWord", filterString);
-    }
-
-    @Test
-    void processingWhenBadWordAndGoodWordAndLineSeparatorThenReturnFilterString() {
-        when(getResponse.getBody()).thenReturn(("badWord" + System.lineSeparator() + "goodWord").getBytes());
-        String filterString = messageProcessor.processing(getResponse);
-        assertEquals("b*****d" + System.lineSeparator() + "goodWord", filterString);
-    }
-
-    @Test
-    void processingWhenOnlyGoodWordsThenReturnOriginalString() {
-        when(getResponse.getBody()).thenReturn("goodWord.goodWord goodWord;goodWord,goodWord?goodWord!goodWord".getBytes());
-        String filterString = messageProcessor.processing(getResponse);
-        assertEquals("goodWord.goodWord goodWord;goodWord,goodWord?goodWord!goodWord", filterString);
+        assertEquals(expected, filterString);
     }
 }
